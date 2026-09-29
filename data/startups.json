@@ -1,0 +1,43 @@
+{
+  "_note": "REAL companies (names, sectors, descriptions, funding/founding facts are sourced — see _sources below), gathered via web search on 2026-09-29. Office AREA placement has two confidence levels, marked per company: 'confirmed' means a real sourced office address; 'approximate' means the company is genuinely Pune-based but I could not verify its exact office location in the time available, so it's placed at a plausible real Pune tech-hub area as a visual approximation, not a verified address. Always re-verify funding figures before quoting them anywhere serious — they change.",
+  "_sources": [
+    "https://inc42.com/lists/top-30-funded-startups-in-pune-2026/",
+    "https://inc42.com/lists/top-20-funded-healthtech-startups-in-pune-2026/",
+    "https://www.failory.com/startups/pune",
+    "https://en.wikipedia.org/wiki/FirstCry",
+    "https://www.clay.com/dossier/firstcry-headquarters-office-locations",
+    "https://tracxn.com/d/companies/onecard/",
+    "https://www.lovethatdesign.com/project/mindtickle-office-pune/",
+    "https://echai.ventures/pune",
+    "https://en.wikipedia.org/wiki/Druva",
+    "https://inshorts.com/en/news/us-punebased-tech-startup-icertis-now-unicorn-with-$115-mn-funding-1563357141182"
+  ],
+  "areas": [
+    { "id": "hinjewadi", "name": "Hinjewadi", "lat": 18.5908, "lng": 73.7395, "description": "Major IT park corridor, west Pune" },
+    { "id": "baner", "name": "Baner", "lat": 18.5590, "lng": 73.7868, "description": "Fast-growing tech and startup hub" },
+    { "id": "kharadi", "name": "Kharadi", "lat": 18.5515, "lng": 73.9345, "description": "IT and business park zone, east Pune" },
+    { "id": "koregaon-park", "name": "Koregaon Park", "lat": 18.5362, "lng": 73.8938, "description": "Cafes, coworking spaces, early-stage startups" },
+    { "id": "viman-nagar", "name": "Viman Nagar", "lat": 18.5679, "lng": 73.9143, "description": "Mixed residential/commercial, near the airport" },
+    { "id": "aundh", "name": "Aundh", "lat": 18.5590, "lng": 73.8077, "description": "Established IT and business district" },
+    { "id": "magarpatta", "name": "Magarpatta", "lat": 18.5158, "lng": 73.9280, "description": "Integrated township with major tech campuses" },
+    { "id": "shivajinagar", "name": "Shivaji Nagar", "lat": 18.5308, "lng": 73.8474, "description": "Central Pune, near the old city core" },
+    { "id": "sangamvadi", "name": "Sangamvadi", "lat": 18.5352, "lng": 73.8825, "description": "Central Pune, near the railway station" }
+  ],
+  "startups": [
+    { "id": "s1", "name": "FirstCry", "sector": "ecommerce", "area": "sangamvadi", "description": "India's largest baby and kids products e-commerce platform. Founded 2010, IPO'd in 2024.", "founded": 2010, "stage": "Public (NSE/BSE)", "locationConfidence": "confirmed", "source": "https://en.wikipedia.org/wiki/FirstCry" },
+    { "id": "s2", "name": "OneCard (FPL Technologies)", "sector": "fintech", "area": "baner", "description": "Metal credit card and consumer lending platform; among Pune's most-funded fintechs ($265M+ raised).", "founded": 2016, "stage": "Series D", "locationConfidence": "confirmed", "source": "https://tracxn.com/d/companies/onecard/" },
+    { "id": "s3", "name": "MindTickle", "sector": "saas", "area": "baner", "description": "Sales readiness and enablement platform used by enterprise revenue teams globally. Unicorn.", "founded": 2011, "stage": "Series F", "locationConfidence": "confirmed", "source": "https://www.lovethatdesign.com/project/mindtickle-office-pune/" },
+    { "id": "s4", "name": "Sarvatra Technologies", "sector": "fintech", "area": "hinjewadi", "description": "Banking software and cloud-based payment infrastructure for cooperative and regional banks.", "founded": 2000, "stage": "Growth", "locationConfidence": "approximate" },
+    { "id": "s5", "name": "ElasticRun", "sector": "logistics", "area": "kharadi", "description": "Rural and Tier-2/3 e-commerce fulfillment and logistics network. Unicorn.", "founded": 2016, "stage": "Series F", "locationConfidence": "approximate" },
+    { "id": "s6", "name": "Xpressbees", "sector": "logistics", "area": "viman-nagar", "description": "E-commerce logistics and last-mile delivery network across India.", "founded": 2015, "stage": "Series F", "locationConfidence": "approximate" },
+    { "id": "s7", "name": "Intangles", "sector": "ai-ml", "area": "hinjewadi", "description": "AI-driven predictive diagnostics for commercial vehicle fleets. Raised a $30M Series B in Sept 2025.", "founded": 2016, "stage": "Series B", "locationConfidence": "approximate" },
+    { "id": "s8", "name": "Lentra", "sector": "fintech", "area": "kharadi", "description": "Cloud-native digital lending infrastructure for banks and NBFCs (~$104M raised).", "founded": 2019, "stage": "Series B", "locationConfidence": "approximate" },
+    { "id": "s9", "name": "Pharmarack", "sector": "healthtech", "area": "koregaon-park", "description": "B2B ordering and distribution SaaS platform for pharmaceutical retailers and stockists.", "founded": 2015, "stage": "Growth", "locationConfidence": "approximate" },
+    { "id": "s10", "name": "CrelioHealth", "sector": "healthtech", "area": "aundh", "description": "Lab information management and diagnostics SaaS for pathology labs.", "founded": 2012, "stage": "Series A", "locationConfidence": "approximate" },
+    { "id": "s11", "name": "Innoplexus", "sector": "ai-ml", "area": "magarpatta", "description": "AI-driven data mining and analytics for pharmaceutical R&D.", "founded": 2013, "stage": "Series B", "locationConfidence": "approximate" },
+    { "id": "s12", "name": "Fittr", "sector": "healthtech", "area": "baner", "description": "Fitness and nutrition coaching community/app (~$17M raised).", "founded": 2016, "stage": "Series A", "locationConfidence": "approximate" },
+    { "id": "s13", "name": "FlexifyMe", "sector": "healthtech", "area": "kharadi", "description": "AI-assisted remote physiotherapy platform (INR 20 Cr Pre-Series A).", "founded": 2021, "stage": "Pre-Series A", "locationConfidence": "approximate" },
+    { "id": "s14", "name": "Loop Health", "sector": "healthtech", "area": "koregaon-park", "description": "Insurance-led primary care and employee health benefits platform.", "founded": 2019, "stage": "Seed", "locationConfidence": "approximate" },
+    { "id": "s15", "name": "SarvaGram", "sector": "fintech", "area": "hinjewadi", "description": "Rural-focused fintech offering credit and financial services in semi-urban/rural India.", "founded": 2018, "stage": "Series C", "locationConfidence": "approximate" }
+  ]
+}

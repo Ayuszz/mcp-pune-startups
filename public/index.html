@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pune Startups Map — MCP demo</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root { --bg:#0f1115; --panel:#161922; --line:#262b38; --ink:#e8eaf0; --muted:#8b92a5; --accent:#5b8cff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:14.5px/1.5 -apple-system,Segoe UI,sans-serif;
+         display:flex; flex-direction:column; height:100vh; }
+  header { padding:12px 18px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  h1 { font-size:15px; margin:0; font-weight:600; white-space:nowrap; }
+  .badge { font-size:11px; color:var(--muted); background:var(--panel); border:1px solid var(--line);
+           padding:3px 8px; border-radius:99px; }
+  .controls { display:flex; gap:8px; padding:10px 18px; border-bottom:1px solid var(--line); flex-wrap:wrap; align-items:center; }
+  select, input { background:var(--panel); border:1px solid var(--line); color:var(--ink); border-radius:6px;
+                  padding:7px 10px; font-size:13.5px; }
+  input { flex:1; min-width:180px; }
+  button { background:var(--accent); color:white; border:none; border-radius:6px; padding:7px 14px;
+           font-size:13.5px; cursor:pointer; font-weight:600; }
+  #count { font-size:12.5px; color:var(--muted); margin-left:auto; }
+  #body { flex:1; display:flex; min-height:0; }
+  #map { flex:1; }
+  #list { width:300px; border-left:1px solid var(--line); overflow-y:auto; flex-shrink:0; }
+  .card { padding:12px 14px; border-bottom:1px solid var(--line); cursor:pointer; }
+  .card:hover { background:var(--panel); }
+  .card-top { display:flex; align-items:center; gap:8px; margin-bottom:3px; }
+  .card-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .card-name { font-weight:700; font-size:14px; }
+  .card-meta { color:var(--muted); font-size:12px; margin-bottom:4px; }
+  .card-desc { font-size:12.5px; color:#c7cbd8; }
+  .empty { padding:20px 14px; color:var(--muted); font-size:13px; }
+  .leaflet-popup-content-wrapper { background:var(--panel); color:var(--ink); }
+  .leaflet-popup-tip { background:var(--panel); }
+  .popup-sector { display:inline-block; font-size:11px; color:var(--accent); font-weight:600; text-transform:uppercase;
+                   margin-bottom:4px; }
+  .popup-title { font-weight:700; margin:0 0 4px; }
+  .popup-meta { color:var(--muted); font-size:12px; margin-bottom:6px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>🗺️ Pune Startups Map</h1>
+    <span class="badge">MCP-powered · real companies, sourced</span>
+    <span class="badge" id="status">connecting…</span>
+  </header>
+  <div class="controls">
+    <select id="sector">
+      <option value="">All sectors</option>
+      <option value="fintech">Fintech</option>
+      <option value="healthtech">Healthtech</option>
+      <option value="saas">SaaS</option>
+      <option value="ecommerce">E-commerce</option>
+      <option value="ai-ml">AI / ML</option>
+      <option value="logistics">Logistics</option>
+    </select>
+    <select id="area"><option value="">All areas</option></select>
+    <input id="query" placeholder="Search name or description…" />
+    <button id="searchBtn">Search</button>
+    <span id="count"></span>
+  </div>
+  <div id="body">
+    <div id="map"></div>
+    <div id="list"></div>
+  </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map = L.map("map").setView([18.5204, 73.8567], 12);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "&copy; OpenStreetMap contributors",
+  maxZoom: 18,
+}).addTo(map);
+
+// Leaflet reads its container's size at init time, but inside a flexbox
+// layout that size isn't finalized until the browser completes a layout
+// pass right after this script runs — so Leaflet can lock in a wrong
+// (sometimes near-zero) size, causing it to compute bad zoom/tile
+// requests. invalidateSize() forces it to re-measure once the real
+// layout has settled. Confirmed via testing: without this, no tile
+// requests fire at all and fitBounds() computes a wildly wrong zoom.
+setTimeout(() => map.invalidateSize(), 0);
+window.addEventListener("resize", () => map.invalidateSize());
+
+let markers = [];
+function clearMarkers() { markers.forEach((m) => map.removeLayer(m)); markers = []; }
+
+const sectorColors = {
+  fintech: "#5b8cff", healthtech: "#ff5b8c", saas: "#5bffb1",
+  ecommerce: "#c75bff", "ai-ml": "#ff5b5b", logistics: "#5bd6ff",
+};
+
+function plot(startups) {
+  clearMarkers();
+  document.getElementById("count").textContent = `${startups.length} result${startups.length === 1 ? "" : "s"}`;
+
+  const markerById = {};
+  startups.forEach((s) => {
+    if (!s.location) return;
+    const color = sectorColors[s.sector] || "#8b92a5";
+    const marker = L.circleMarker([s.location.lat, s.location.lng], {
+      radius: 11, color: "#0f1115", fillColor: color, fillOpacity: 0.95, weight: 2,
+    }).addTo(map);
+    const confBadge = s.locationConfidence === "confirmed"
+      ? `<span style="color:#3ddc84">✓ verified office address</span>`
+      : `<span style="color:#8b92a5">≈ approximate area (unverified exact address)</span>`;
+    marker.bindPopup(`
+      <span class="popup-sector">${s.sector}</span>
+      <p class="popup-title">${s.name}</p>
+      <div class="popup-meta">${s.location.name} · ${s.stage} · founded ${s.founded}</div>
+      <div>${s.description}</div>
+      <div style="margin-top:6px;font-size:11px">${confBadge}</div>
+    `);
+    markers.push(marker);
+    markerById[s.id] = marker;
+  });
+
+  // The list is the reliable way to see results regardless of zoom/pin
+  // size — clicking a card centers the map on that pin and opens its popup.
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  if (startups.length === 0) {
+    list.innerHTML = `<div class="empty">No matching startups. Try a different filter or search term.</div>`;
+  } else {
+    startups.forEach((s) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      const color = sectorColors[s.sector] || "#8b92a5";
+      const conf = s.locationConfidence === "confirmed" ? "✓ verified address" : "≈ approx. area";
+      card.innerHTML = `
+        <div class="card-top"><span class="card-dot" style="background:${color}"></span><span class="card-name">${s.name}</span></div>
+        <div class="card-meta">${s.location ? s.location.name : "?"} · ${s.sector} · ${s.stage} · <span style="opacity:.8">${conf}</span></div>
+        <div class="card-desc">${s.description}</div>
+      `;
+      card.addEventListener("click", () => {
+        if (!s.location) return;
+        map.setView([s.location.lat, s.location.lng], 15);
+        markerById[s.id]?.openPopup();
+      });
+      list.appendChild(card);
+    });
+  }
+
+  if (startups.length) {
+    const bounds = L.latLngBounds(startups.filter((s) => s.location).map((s) => [s.location.lat, s.location.lng]));
+    map.fitBounds(bounds.pad(0.3));
+  }
+}
+
+async function loadAreas() {
+  const r = await fetch("/api/areas");
+  const data = await r.json();
+  const sel = document.getElementById("area");
+  (data.areas || []).forEach((a) => {
+    const opt = document.createElement("option");
+    opt.value = a.id;
+    opt.textContent = a.name;
+    sel.appendChild(opt);
+  });
+}
+
+async function search() {
+  const sector = document.getElementById("sector").value;
+  const area = document.getElementById("area").value;
+  const query = document.getElementById("query").value.trim();
+  const params = new URLSearchParams();
+  if (sector) params.set("sector", sector);
+  if (area) params.set("area", area);
+  if (query) params.set("query", query);
+
+  const r = await fetch("/api/search?" + params.toString());
+  const data = await r.json();
+  plot(data.startups || []);
+}
+
+async function checkHealth() {
+  try {
+    const r = await fetch("/api/health");
+    const data = await r.json();
+    document.getElementById("status").textContent = data.mcpConnected ? "MCP server connected" : "MCP server offline";
+  } catch {
+    document.getElementById("status").textContent = "backend unreachable";
+  }
+}
+
+document.getElementById("searchBtn").addEventListener("click", search);
+document.getElementById("sector").addEventListener("change", search);
+document.getElementById("area").addEventListener("change", search);
+document.getElementById("query").addEventListener("keydown", (e) => { if (e.key === "Enter") search(); });
+
+checkHealth();
+loadAreas().then(search);
+</script>
+</body>
+</html>
